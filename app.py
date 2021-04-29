@@ -20,6 +20,7 @@ client = AipSpeech(
 
 
 def purge_files():
+    """Keep the number of files within `MAX_FILES`."""
     audio_files = list(MP3_FOLDER.iterdir())
     n_audio_files = len(audio_files)
     if n_audio_files <= MAX_FILES:
@@ -35,10 +36,12 @@ def play_mp3(path):
 
 
 def file_name(text:str):
+    """Generate a proper mp3 file name by hashing the text."""
     return hashlib.md5(text.encode('utf-8')).hexdigest() + '.mp3'
 
 
 def text_to_mp3(text:str) -> Path:
+    """Convert text to mp3 file."""
     if not text:
         return
 
@@ -62,6 +65,7 @@ def text_to_mp3(text:str) -> Path:
 
 @app.get("/v1/{text}")
 def speak(text: str):
+    """Main entrance."""
     if not text:
         return
 
