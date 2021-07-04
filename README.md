@@ -11,14 +11,13 @@ It speaks what you requests.
 - 并发友好
 
 ## 运行
-需要提前创建百度语音合成应用。文档：https://ai.baidu.com/ai-doc/SPEECH/zk4nlz99s
+基于Azure的[文本转语音服务](https://azure.microsoft.com/zh-cn/services/cognitive-services/text-to-speech/).
 
 ```sh
 sudo apt-get install mpg321
 pip install -r requirements.txt
 
-export APP_ID=your-app-id
-export APP_KEY=app-key
-export APP_SECRET=secret
-uvicorn app:app --reload
+export AZ_REGION=<REGION>
+export AZ_TOKEN=<SUBSCRIPTION KEY>
+uvicorn app:app --reload --host 0.0.0.0
 ```
