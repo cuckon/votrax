@@ -48,7 +48,7 @@ def get_voice_list():
     keys = ['ShortName', 'Gender', 'StyleList', 'LocalName']
     return [
         {k:i[k] for k in keys if k in i }
-        for i in info
+        for i in info if i['Locale'] == 'zh-CN'
     ]
 
 
@@ -122,7 +122,7 @@ async def make_html(payload):
         </div>
         <hr>
         <div>
-            给机器猫转账，换更大的喇叭:<br>
+            🤗给机器猫转账，换更大的喇叭:<br><br>
             <img src="/static/qrcode.png" width="160" height="160">
         </div>
 
@@ -137,7 +137,7 @@ async def convert_and_play(text, name, style):
     return mp3_path
 
 
-@app.get("/v1/{text}", response_class=HTMLResponse)
+@app.get('/v1/{text}', response_class=HTMLResponse)
 async def speak(
         text: str,
         name: Optional[str]='zh-CN-XiaoxiaoNeural',
@@ -146,13 +146,20 @@ async def speak(
     """Main entrance."""
     res = await asyncio.gather(
         convert_and_play(text, name, style),
-        make_html(f'已广播: "<B>{text}</B>"'),
+        make_html(f'🔊已广播: "<B>{text}</B>"'),
     )
 
     return res[1]
 
 
-@app.get("/v1", response_class=HTMLResponse)
+
+@app.get('/v1')
+async def get_list_api():
+    """Get available parameters."""
+    return get_voice_list()
+
+
+@app.get('/list', response_class=HTMLResponse)
 async def get_list():
     """Get available parameters."""
     from json2html import json2html
@@ -162,26 +169,27 @@ async def get_list():
     return await make_html(html)
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get('/', response_class=HTMLResponse)
 async def help():
     """Get available parameters."""
     html = '''
     <h1>机器猫广播站</h1>
-    <p>浏览器直接访问网址即可广播文字。可用于强提醒、广播找人等情景。
-    <p>可用范围为所有内网的设备，比如电脑、手机、iPad。
-    <p><b>广播源暂时不设限，半匿名（后台可跟踪），请遵纪守法，勿广播不该广播的内容。</b>
+    <div><img src="/static/speaker.jpg"></div>
+    <p>任意浏览器直接访问网址即可广播文字。可用于强提醒、广播找人等情景。
+    <p>可用范围为所有内网的设备，比如💻电脑、📱手机、👩‍💻iPad。
+    <p>⚠️<b>广播源暂时不设限，半匿名（必要时后台可跟踪）。请遵纪守法，勿广播不该广播的内容。</b>
     <hr>
     <h2>使用范例</h2>
     <p><a href="javascript:void(0)">http://10.240.154.195:8000/v1/周杰伦看一眼泡泡</a><br>
-    播放"周杰伦看一眼泡泡"
+    🔊播放"周杰伦看一眼泡泡"
     <p><a href="javascript:void(0)">http://10.240.154.195:8000/v1/周杰伦看一眼泡泡?name=zh-CN-YunyeNeural</a><br>
-    播放"周杰伦看一眼泡泡"，使用“云野”的声音。
+    🔊播放"周杰伦看一眼泡泡"，使用“云野”的声音。
     <p><a href="javascript:void(0)">http://10.240.154.195:8000/v1/周杰伦看一眼泡泡?style=angry</a><br>
-    播放"周杰伦看一眼泡泡"，使用生气的语调。
+    🔊播放"周杰伦看一眼泡泡"，使用生气的语调。
     <p><a href="javascript:void(0)">http://10.240.154.195:8000/v1/周杰伦看一眼泡泡?name=zh-CN-YunyeNeural&style=angry</a><br>
-    播放"周杰伦看一眼泡泡"，使用“云野”的声音，配合生气的语调。
+    🔊播放"周杰伦看一眼泡泡"，使用“云野”的声音，配合生气的语调。
     <h2>可用声音和语调参考</h2>
-    <p>在<a href="/v1">此页面</a>查看列表。
+    <p>在<a href="/list">此页面</a>查看列表。
     <p>在<a href="https://azure.microsoft.com/zh-cn/services/cognitive-services/text-to-speech/">微软 Azure官方</a>
     可试听.
     '''
