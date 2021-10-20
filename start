@@ -1,0 +1,5 @@
+
+cd  /home/pi/code/votrax/
+export AZ_REGION=westus2
+export AZ_TOKEN=8d466ea8913d4b26a0b316b55b8cd84d
+/home/pi/venv/votrax/bin/python3 /home/pi/venv/votrax/bin/uvicorn app:app --reload --host 0.0.0.0
